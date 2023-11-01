@@ -10,12 +10,12 @@ firebase = pyrebase.initialize_app(config)
 
 auth = firebase.auth()
 
-# Log the user in
+# Log in
 user = auth.sign_in_anonymous()
 
 # Get a reference to the database service
 db = firebase.database()
 
-# Use the reference to get/set data
-data = {"name": "John Doe", "age": 30}
+# Test push data up to firebase
+data = {"name": "Tuan Anh", "age": 69}
 db.child("users").push(data, user['idToken'])
