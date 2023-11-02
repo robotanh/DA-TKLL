@@ -1,4 +1,6 @@
-#include<WiFi.h>
+#include <LiquidCrystal_I2C.h>
+#include <Wire.h>
+#include <WiFi.h>
 #include<Firebase_ESP_Client.h>
 
 #include "addons/TokenHelper.h"
@@ -10,6 +12,7 @@
 #define DATABASE_URL "https://esp32-project-d31cd-default-rtdb.asia-southeast1.firebasedatabase.app/"
 #define PWMChannel 0
 #define LDR_PIN 34
+#define I2C_Device 0x27
 
 const int freq = 5000;
 const int resolution = 8;
@@ -28,6 +31,9 @@ int ldrData =0;
 float voltage = 0.0;
 int pwmValue = 0;
 bool ledStatus = false;
+
+
+LiquidCrystal_I2C lcd(0x27, 16, 2);
 
 void setup() {
 
@@ -56,7 +62,11 @@ void setup() {
   pinMode(LED1, OUTPUT);     // digital
   ledcSetup(PWMChannel, freq, resolution);
   ledcAttachPin(LED2, PWMChannel);
-//  pinMode(button, INPUT);   // thiết lập chân nút bấm là INPUT
+  
+  lcd.init();  // Initialize the LCD
+  lcd.backlight();  // Turn on the LCD backlight
+  lcd.setCursor(0, 0);  // Set the cursor to the first column of the first row
+  lcd.print("Electronics Simplified");  // Print a message
 
 }
 
@@ -105,8 +115,49 @@ if(Firebase.RTDB.getBool(&fbdo,"/LED/digital/")){
 }else{
   Serial.println("FAILED: "+ fbdo.errorReason());
 }
+
 fbdo.clear();
+//-------------------------------------------------------
 
-
+if(Firebase.RTDB.getString(&fbdo,"/users/-Ni8LyV12uM-mJa_zP50/name/")){
+  if(fbdo.dataType()=="string"){
+    Serial.println("Successful READ from" + fbdo.dataPath()+ ": "+ fbdo.stringData() + " ("+fbdo.dataType()+") ");
+    lcd.setCursor(0,1);
+    lcd.print(fbdo.stringData());
+  }
+}else{
+  Serial.println("FAILED: "+ fbdo.errorReason());
+}
+fbdo.clear();
+  // byte error, address;
+  // int nDevices;
+  // Serial.println("Scanning...");
+  // nDevices = 0;
+  // for(address = 1; address < 127; address++ ) {
+  //   Wire.beginTransmission(address);
+  //   error = Wire.endTransmission();
+  //   if (error == 0) {
+  //     Serial.print("I2C device found at address 0x");
+  //     if (address<16) {
+  //       Serial.print("0");
+  //     }
+  //     Serial.println(address,HEX);
+  //     nDevices++;
+  //   }
+  //   else if (error==4) {
+  //     Serial.print("Unknow error at address 0x");
+  //     if (address<16) {
+  //       Serial.print("0");
+  //     }
+  //     Serial.println(address,HEX);
+  //   }    
+  // }
+  // if (nDevices == 0) {
+  //   Serial.println("No I2C devices found\n");
+  // }
+  // else {
+  //   Serial.println("done\n");
+  // }
+  // delay(5000);  
 
 }
