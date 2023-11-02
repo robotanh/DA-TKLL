@@ -66,7 +66,7 @@ void setup() {
   lcd.init();  // Initialize the LCD
   lcd.backlight();  // Turn on the LCD backlight
   lcd.setCursor(0, 0);  // Set the cursor to the first column of the first row
-  lcd.print("Electronics Simplified");  // Print a message
+
 
 }
 
