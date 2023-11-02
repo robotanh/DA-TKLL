@@ -122,8 +122,17 @@ fbdo.clear();
 if(Firebase.RTDB.getString(&fbdo,"/users/-Ni8LyV12uM-mJa_zP50/name/")){
   if(fbdo.dataType()=="string"){
     Serial.println("Successful READ from" + fbdo.dataPath()+ ": "+ fbdo.stringData() + " ("+fbdo.dataType()+") ");
+    lcd.setCursor(0,0);
+    lcd.print(String("Name: ")+fbdo.stringData());
+  }
+}else{
+  Serial.println("FAILED: "+ fbdo.errorReason());
+}
+if(Firebase.RTDB.getInt(&fbdo,"/users/-Ni8LyV12uM-mJa_zP50/age/")){
+  if(fbdo.dataType()=="int"){
+    Serial.println("Successful READ from" + fbdo.dataPath()+ ": "+ fbdo.intData() + " ("+fbdo.dataType()+") ");
     lcd.setCursor(0,1);
-    lcd.print(fbdo.stringData());
+    lcd.print(String("Age: ") + String(fbdo.intData()));
   }
 }else{
   Serial.println("FAILED: "+ fbdo.errorReason());
