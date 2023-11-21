@@ -1,4 +1,7 @@
+#include <DFRobotDFPlayerMini.h>
+
 #include <LiquidCrystal_I2C.h>
+#include <Arduino.h>
 #include <Wire.h>
 #include <WiFi.h>
 #include<Firebase_ESP_Client.h>
@@ -34,9 +37,11 @@ bool ledStatus = false;
 
 
 LiquidCrystal_I2C lcd(0x27, 16, 2);
-
+HardwareSerial mySoftwareSerial(1);
+DFRobotDFPlayerMini myDFPlayer;
 void setup() {
 
+  mySoftwareSerial.begin(9600, SERIAL_8N1, 3, 1);
   Serial.begin(115200);
   WiFi.begin(WIFI_SSID,WIFI_PASSWORD);
   while (WiFi.status()!= WL_CONNECTED){
@@ -55,6 +60,21 @@ void setup() {
   }else{
     Serial.printf("%s\n", config.signer.signupError.message.c_str());
   }
+  //check DFplayermini
+  Serial.println(F("DFRobot DFPlayer Mini Demo"));
+  Serial.println(F("Initializing DFPlayer ... (May take 3~5 seconds)"));
+  
+  if (!myDFPlayer.begin(mySoftwareSerial)) {  //Use softwareSerial to communicate with mp3.
+    
+    Serial.println(myDFPlayer.readType(),HEX);
+    Serial.println(F("Unable to begin:"));
+    Serial.println(F("1.Please recheck the connection!"));
+    Serial.println(F("2.Please insert the SD card!"));
+    while(true);
+  }
+  Serial.println(F("DFPlayer Mini online."));
+  
+  myDFPlayer.setTimeOut(500); //Set serial communictaion time out 500ms
 
   config.token_status_callback = tokenStatusCallback;
   Firebase.begin(&config,&auth );
@@ -121,7 +141,9 @@ fbdo.clear();
 
 if(Firebase.RTDB.getString(&fbdo,"/users/-Ni8LyV12uM-mJa_zP50/name/")){
   if(fbdo.dataType()=="string"){
+    
     Serial.println("Successful READ from" + fbdo.dataPath()+ ": "+ fbdo.stringData() + " ("+fbdo.dataType()+") ");
+    lcd.clear();
     lcd.setCursor(0,0);
     lcd.print(String("Name: ")+fbdo.stringData());
   }

@@ -21,7 +21,7 @@ db = firebase.database()
 user_uid = "-Ni8LyV12uM-mJa_zP50"
 
 new_data_LED = {"analog": 200, "digital": True}
-new_data = {"name": "Tuan anh", "age": 20}
+new_data = {"name": "Tuan em", "age": 20}
 # Update the data for the specific user
 db.child("users").child(user_uid).update(new_data, user['idToken'])
 
