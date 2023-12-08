@@ -41,8 +41,9 @@ HardwareSerial mySoftwareSerial(1);
 DFRobotDFPlayerMini myDFPlayer;
 void setup() {
 
-  mySoftwareSerial.begin(9600, SERIAL_8N1, 3, 1);
-  Serial.begin(115200);
+  // mySoftwareSerial.begin(9600, SERIAL_8N1, 16, 17);
+  Serial2.begin(9600);
+  Serial.begin(9600);
   WiFi.begin(WIFI_SSID,WIFI_PASSWORD);
   while (WiFi.status()!= WL_CONNECTED){
     Serial.print("."); delay(300);
@@ -64,13 +65,13 @@ void setup() {
   Serial.println(F("DFRobot DFPlayer Mini Demo"));
   Serial.println(F("Initializing DFPlayer ... (May take 3~5 seconds)"));
   
-  if (!myDFPlayer.begin(mySoftwareSerial)) {  //Use softwareSerial to communicate with mp3.
+  if (!myDFPlayer.begin(Serial2)) {  //Use softwareSerial to communicate with mp3.
     
     Serial.println(myDFPlayer.readType(),HEX);
     Serial.println(F("Unable to begin:"));
     Serial.println(F("1.Please recheck the connection!"));
     Serial.println(F("2.Please insert the SD card!"));
-    while(true);
+    // while(true);
   }
   Serial.println(F("DFPlayer Mini online."));
   
@@ -160,35 +161,6 @@ if(Firebase.RTDB.getInt(&fbdo,"/users/-Ni8LyV12uM-mJa_zP50/age/")){
   Serial.println("FAILED: "+ fbdo.errorReason());
 }
 fbdo.clear();
-  // byte error, address;
-  // int nDevices;
-  // Serial.println("Scanning...");
-  // nDevices = 0;
-  // for(address = 1; address < 127; address++ ) {
-  //   Wire.beginTransmission(address);
-  //   error = Wire.endTransmission();
-  //   if (error == 0) {
-  //     Serial.print("I2C device found at address 0x");
-  //     if (address<16) {
-  //       Serial.print("0");
-  //     }
-  //     Serial.println(address,HEX);
-  //     nDevices++;
-  //   }
-  //   else if (error==4) {
-  //     Serial.print("Unknow error at address 0x");
-  //     if (address<16) {
-  //       Serial.print("0");
-  //     }
-  //     Serial.println(address,HEX);
-  //   }    
-  // }
-  // if (nDevices == 0) {
-  //   Serial.println("No I2C devices found\n");
-  // }
-  // else {
-  //   Serial.println("done\n");
-  // }
-  // delay(5000);  
+
 
 }
