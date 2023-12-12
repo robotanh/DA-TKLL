@@ -20,6 +20,7 @@
 
 const int LED = 33;
 const int Buzzer = 26;
+int buzzer_flag =0;
 
 FirebaseAuth auth;
 FirebaseConfig config;
@@ -62,15 +63,16 @@ void setup() {
         }
         pinMode(LED, OUTPUT);
         pinMode(Buzzer, OUTPUT); 
-        digitalWrite(Buzzer, LOW);
-
+        digitalWrite(Buzzer, HIGH);
+        // tone(); 
+      // while (1) digitalWrite(Buzzer, LOW);
 }
 
 int block=2;
                           
 
-unsigned char blockcontent[16] = {'v', 'i', '\0'};
-unsigned char readbackblock[18];
+// unsigned char blockcontent[16] = {'v', 'i', '\0'};
+unsigned char readbackblock[18]={'\0'};
 String readfromdb = "";
 void loop()
 {
@@ -109,18 +111,27 @@ void loop()
     if (blockcontentString == readfromdb) //compare string 
     {
       Serial.println("Strings are equal.");
-      digitalWrite(Buzzer, LOW);
-      digitalWrite(LED, HIGH);
-    } else {
-      Serial.println("Strings are not equal.");
+      // buzzer_flag = 1;
       digitalWrite(Buzzer, HIGH);
+      digitalWrite(LED, HIGH);
+      // digitalWrite(Buzzer, LOW);
+      delay(1000);
+      
+    } else if(readbackblock[0]!= '\0') {
+      Serial.println("Strings are not equal.");
+      // if(buzzer_flag != 0){
+      //   digitalWrite(Buzzer, HIGH);
+      //   buzzer_flag =0;
+      // }
       digitalWrite(LED, LOW);
+      digitalWrite(Buzzer, LOW);
     }
   Serial.println("");
+  readbackblock[0]= '\0';
   delay(5000);
   digitalWrite(LED, LOW);
-  digitalWrite(Buzzer, LOW);
-  noTone(Buzzer);
+  digitalWrite(Buzzer, HIGH);
+  // noTone(Buzzer);
   mfrc522.PCD_Init();        // Init MFRC522 card (in case you wonder what PCD means: proximity coupling device)
   Serial.println("Scan a MIFARE Classic card");
          
