@@ -9,8 +9,8 @@
 #include "addons/TokenHelper.h"
 #include "addons/RTDBHelper.h"
 
-#define WIFI_SSID "KPL_TECH"
-#define WIFI_PASSWORD "999999999"
+#define WIFI_SSID "tanh"
+#define WIFI_PASSWORD "12345678"
 #define API_KEY "AIzaSyADY4l9sDZnqcR48svSYRanIiVyZ_IQJCk"
 #define DATABASE_URL "https://esp32-project-d31cd-default-rtdb.asia-southeast1.firebasedatabase.app/"
 #define PWMChannel 0
@@ -71,7 +71,9 @@ void setup() {
     Serial.println(F("Unable to begin:"));
     Serial.println(F("1.Please recheck the connection!"));
     Serial.println(F("2.Please insert the SD card!"));
-    // while(true);
+    // while(true){
+    //   // Serial.print(123);
+    // };
   }
   Serial.println(F("DFPlayer Mini online."));
   

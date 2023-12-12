@@ -10,8 +10,8 @@
 #include "addons/TokenHelper.h"
 #include "addons/RTDBHelper.h"
 
-#define WIFI_SSID "KPL_TECH"
-#define WIFI_PASSWORD "999999999"
+#define WIFI_SSID "tanh"
+#define WIFI_PASSWORD "12345678"
 #define API_KEY "AIzaSyADY4l9sDZnqcR48svSYRanIiVyZ_IQJCk"
 #define DATABASE_URL "https://esp32-project-d31cd-default-rtdb.asia-southeast1.firebasedatabase.app/"
 
@@ -19,6 +19,7 @@
 #define SS_PIN          5         // Configurable, see typical pin layout above
 
 const int LED = 33;
+const int Buzzer = 26;
 
 FirebaseAuth auth;
 FirebaseConfig config;
@@ -60,13 +61,15 @@ void setup() {
                 key.keyByte[i] = 0xFF;
         }
         pinMode(LED, OUTPUT);
+        pinMode(Buzzer, OUTPUT); 
+        digitalWrite(Buzzer, LOW);
 
 }
 
 int block=2;
                           
 
-unsigned char blockcontent[16] = "Tuan Anh";
+unsigned char blockcontent[16] = {'v', 'i', '\0'};
 unsigned char readbackblock[18];
 String readfromdb = "";
 void loop()
@@ -96,57 +99,32 @@ void loop()
   }
   Serial.println("Read Card Serial OK");
   Serial.println("card selected");      
-  writeBlock(block, blockcontent);//the blockcontent array is written into the card block
+
   readBlock(block, readbackblock);//read the block back
   Serial.print("read block: ");
   for (int j=0 ; j<16 ; j++){
     Serial.write (readbackblock[j]);//Serial.write() transmits the ASCII numbers as human readable characters to serial monitor
   }
-    String blockcontentString(reinterpret_cast<char*>(blockcontent));
+    String blockcontentString(reinterpret_cast<char*>(readbackblock));
     if (blockcontentString == readfromdb) //compare string 
     {
       Serial.println("Strings are equal.");
+      digitalWrite(Buzzer, LOW);
       digitalWrite(LED, HIGH);
     } else {
       Serial.println("Strings are not equal.");
+      digitalWrite(Buzzer, HIGH);
       digitalWrite(LED, LOW);
     }
   Serial.println("");
   delay(5000);
   digitalWrite(LED, LOW);
+  digitalWrite(Buzzer, LOW);
+  noTone(Buzzer);
   mfrc522.PCD_Init();        // Init MFRC522 card (in case you wonder what PCD means: proximity coupling device)
   Serial.println("Scan a MIFARE Classic card");
          
  
-}
-
-int writeBlock(int blockNumber, unsigned char arrayAddress[]) 
-{
-  int largestModulo4Number=blockNumber/4*4;
-  int trailerBlock=largestModulo4Number+3;//determine trailer block for the sector
-  if (blockNumber > 2 && (blockNumber+1)%4 == 0){Serial.print(blockNumber);Serial.println(" is a trailer block:");return 2;}//block number is a trailer block (modulo 4); quit and send error code 2
-  Serial.print(blockNumber);
-  Serial.println(" is a data block:");
-  
-  /*****************************************authentication of the desired block for access***********************************************************/
-  MFRC522::StatusCode status = mfrc522.PCD_Authenticate(MFRC522::PICC_CMD_MF_AUTH_KEY_A, trailerBlock, &key, &(mfrc522.uid));
-  if (status != MFRC522::STATUS_OK) {
-         Serial.print("PCD_Authenticate() failed: ");
-         Serial.println(mfrc522.GetStatusCodeName(status));
-         return 3;//return "3" as error message
-  }
-  /*****************************************writing the block***********************************************************/
-        
-  status = mfrc522.MIFARE_Write(blockNumber, arrayAddress, 16);//valueBlockA is the block number, MIFARE_Write(block number (0-15), byte array containing 16 values, number of bytes in block (=16))
-  //status = mfrc522.MIFARE_Write(9, value1Block, 16);
-  if (status != MFRC522::STATUS_OK) {
-           Serial.print("MIFARE_Write() failed: ");
-           Serial.println(mfrc522.GetStatusCodeName(status));
-           return 4;//return "4" as error message
-  }
-  Serial.println("block was written");
-
-  return 0;
 }
 
 
